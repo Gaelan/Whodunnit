@@ -2,10 +2,6 @@
   border-right: 2px white solid;
 }
 
-.known {
-  background-color: #a9a9a9;
-}
-
 .code {
   font-family: sans-serif;
   white-space: pre-wrap;
@@ -21,92 +17,20 @@
   flex-grow: 0;
 }
 
-.color-code-1 {
-  background-color: #e6194b;
-  color: white;
-}
-.color-code-2 {
-  background-color: #3cb44b;
-  color: white;
-}
-.color-code-3 {
-  background-color: #ffe119;
-  color: black;
-}
-.color-code-4 {
-  background-color: #4363d8;
-  color: white;
-}
-.color-code-5 {
-  background-color: #f58231;
-  color: white;
-}
-.color-code-6 {
-  background-color: #911eb4;
-  color: white;
-}
-.color-code-7 {
-  background-color: #42d4f4;
-  color: black;
-}
-.color-code-8 {
-  background-color: #f032e6;
-  color: white;
-}
-.color-code-9 {
-  background-color: #bfef45;
-  color: black;
-}
-.color-code-10 {
-  background-color: #fabebe;
-  color: black;
-}
-.color-code-11 {
-  background-color: #469990;
-  color: white;
-}
-.color-code-12 {
-  background-color: #e6beff;
-  color: black;
-}
-.color-code-13 {
-  background-color: #9a6324;
-  color: white;
-}
-.color-code-14 {
-  background-color: #fffac8;
-  color: black;
-}
-.color-code-15 {
-  background-color: #800000;
-  color: white;
-}
-.color-code-16 {
-  background-color: #aaffc3;
-  color: black;
-}
-.color-code-17 {
-  background-color: #808000;
-  color: white;
-}
-.color-code-18 {
-  background-color: #ffd8b1;
-  color: black;
-}
-.color-code-19 {
-  background-color: #000075;
-  color: white;
-}
-
 #colorKey {
   list-style: none;
   padding-left: 0;
+}
+
+#colorKey li {
+  margin-bottom: 5px;
 }
 
 .code {
   overflow: scroll;
   max-height: 100vh;
   margin-top: 0;
+  margin-bottom: 0;
 }
 
 .sidebar {

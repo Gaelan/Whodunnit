@@ -1,17 +1,22 @@
 import React, { Component } from "react"
 import "./App.css"
 import io from "socket.io-client"
+import randomColor from "randomcolor"
 
 const socket = io({ path: "/whodunnit/socket.io" })
+
+function colorForUser(username) {
+  return randomColor({
+    seed: username,
+    luminosity: "light"
+  })
+}
 
 function Chunk({ chunk, mouseEnter, mouseLeave, highlight, colorId }) {
   const classes = []
   classes.push("chunk")
   if (chunk.added) {
     classes.push("known")
-  }
-  if (colorId) {
-    classes.push("color-code-" + colorId)
   }
   if (highlight) {
     classes.push("highlight")
@@ -21,17 +26,31 @@ function Chunk({ chunk, mouseEnter, mouseLeave, highlight, colorId }) {
       className={classes.join(" ")}
       onMouseEnter={mouseEnter}
       onMouseLeave={mouseLeave}
+      style={{
+        backgroundColor: chunk.added && colorForUser(chunk.added.author)
+      }}
     >
       {chunk.text}
     </span>
   )
 }
 
-function ColorKey({ scheme }) {
+function ColorKey({ stats }) {
+  const names = Object.keys(stats)
+    .filter(x => x != "unknown")
+    .sort((a, b) => stats[b] - stats[a])
+    .slice(0, 20)
   return (
     <ul id="colorKey">
-      {scheme.map((name, index) => (
-        <li className={"colorExample color-code-" + (index + 1)}>{name}</li>
+      {names.map(name => (
+        <li>
+          <span
+            className="colorExample"
+            style={{ backgroundColor: colorForUser(name) }}
+          >
+            {name}
+          </span>
+        </li>
       ))}
     </ul>
   )
@@ -54,7 +73,7 @@ class App extends Component {
         const names = Object.keys(art.stats)
           .filter(x => x != "unknown")
           .sort((a, b) => art.stats[b] - art.stats[a])
-        this.setState({ article: art, colorScheme: names.slice(0, 19) })
+        this.setState({ article: art })
       }
     })
   }
@@ -104,9 +123,7 @@ class App extends Component {
               </div>
             )}
           </div>
-          {this.state.colorScheme && (
-            <ColorKey scheme={this.state.colorScheme} />
-          )}
+          {this.state.article && <ColorKey stats={this.state.article.stats} />}
         </div>
       </div>
     )
