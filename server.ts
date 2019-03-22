@@ -279,6 +279,8 @@ const app = express()
 const server = new http.Server(app)
 const io = SocketIo(server)
 
+app.use(express.static("whodunnit-client/build"))
+
 io.on("connection", client => {
   client.on("requestArticle", message => {
     run(message.article, client)
