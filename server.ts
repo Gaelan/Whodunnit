@@ -277,9 +277,10 @@ async function run(title: string, client: SocketIo.Socket) {
 
 const app = express()
 const server = new http.Server(app)
-const io = SocketIo(server)
+const io = SocketIo(server, { path: "/whodunnit/socket.io" })
 
-app.use("/whodunnit", express.static("whodunnit-client/build"))
+console.log(__dirname + "/whodunnit-client/build")
+app.use("/whodunnit", express.static(__dirname + "/whodunnit-client/build"))
 
 io.on("connection", client => {
   client.on("requestArticle", message => {

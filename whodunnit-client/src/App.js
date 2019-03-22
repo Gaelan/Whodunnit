@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import "./App.css"
 import io from "socket.io-client"
 
-const socket = io()
+const socket = io({ path: "/whodunnit/socket.io" })
 
 function Chunk({ chunk, mouseEnter, mouseLeave, highlight, colorId }) {
   const classes = []
