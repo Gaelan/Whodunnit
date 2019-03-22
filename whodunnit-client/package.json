@@ -24,11 +24,6 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": {
-    "/socket.io": {
-      "target": "http://localhost:4000",
-      "ws": true
-    }
-  },
+  "proxy": "http://localhost:4000",
   "homepage": "http://tools.wmflabs.org/whodunnit/"
 }

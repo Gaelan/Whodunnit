@@ -16,8 +16,9 @@
 }
 
 .sidebar {
-  flex-basis: 20%;
+  flex-basis: 30%;
   flex-shrink: 0;
+  flex-grow: 0;
 }
 
 .color-code-1 {
