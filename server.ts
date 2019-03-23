@@ -233,7 +233,15 @@ async function run(title: string, client: SocketIo.Socket) {
   try {
     let rvcontinue: string | null = null
     let art: Article | null = null
+    let connected = true
+    client.on("disconnect", reason => {
+      console.log(`[${title}] stopping (disconnected: ${reason})`)
+      connected = false
+    })
     while (true) {
+      if (!connected) {
+        break
+      }
       const url: string = `https://en.wikipedia.org/w/api.php?action=query&prop=revisions&titles=${encodeURIComponent(
         title
       )}&rvlimit=50&rvprop=timestamp%7Cuser%7Ccomment%7Cids|contentmodel|content&rvslots=main&format=json${
@@ -245,6 +253,9 @@ async function run(title: string, client: SocketIo.Socket) {
         }
       })
       const json = await res.json()
+      if (!connected) {
+        break
+      }
       const pages = json.query.pages
       const pageId = Object.keys(pages)[0]
       let earlierRevs: any[] = []
@@ -267,14 +278,13 @@ async function run(title: string, client: SocketIo.Socket) {
       })
       client.emit("update", art.toJson())
       if (!art.stats()["unknown"]) {
+        console.log(`[${title}] stopping (all resolved)`)
         break
       }
       if (json.continue) {
         rvcontinue = json.continue.rvcontinue
       } else {
-        break
-      }
-      if (!client.connected) {
+        console.log(`[${title}] stopping (reached end)`)
         break
       }
     }
