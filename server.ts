@@ -110,7 +110,6 @@ export class Article {
 
     let diff = dmp.diff_main(revision.text, this.earliestRev.text)
     dmp.diff_cleanupSemantic(diff)
-    console.log("diff done")
 
     let diffChunkId = 0
     let articleChunkId = 0
@@ -252,15 +251,12 @@ async function run(title: string, client: SocketIo.Socket) {
       earlierRevs.forEach((rev: any, idx) => {
         const revObj = new Revision(rev)
         console.log(
-          `handling rev ${revObj.id} ${revObj.comment} by ${revObj.author}`
+          `[${title}] handling rev ${revObj.id} ${revObj.comment} by ${
+            revObj.author
+          }`
         )
         art!.addRevisionBefore(revObj)
         const stats = art!.stats()
-        console.log(
-          Object.keys(stats)
-            .map(user => `${user}: ${stats[user]}`)
-            .join(", ")
-        )
       })
       client.emit("update", art.toJson())
       if (!art.stats()["unknown"]) {
@@ -285,7 +281,6 @@ const app = express()
 const server = new http.Server(app)
 const io = SocketIo(server, { path: "/whodunnit/socket.io" })
 
-console.log(__dirname + "/whodunnit-client/build")
 app.use("/whodunnit", express.static(__dirname + "/whodunnit-client/build"))
 
 io.on("connection", client => {
