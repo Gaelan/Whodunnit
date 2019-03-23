@@ -2,11 +2,13 @@
   border-right: 2px white solid;
   color: black;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .code {
   font-family: sans-serif;
   white-space: pre-wrap;
+  margin-left: 10px;
 }
 
 .flex {
@@ -41,6 +43,14 @@
   margin-bottom: 0;
 }
 
-.highlight {
+.hovered {
   opacity: 0.8; /* Hack, but it works. */
+}
+
+.selected {
+  opacity: 0.9;
+}
+
+.dim {
+  opacity: 0.5;
 }
