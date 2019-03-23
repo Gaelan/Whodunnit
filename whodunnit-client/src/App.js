@@ -58,19 +58,23 @@ function ColorKey({ stats, selectUser }) {
   const total = Object.keys(stats)
     .map(x => stats[x])
     .reduce((a, b) => a + b)
+
   return (
     <ul id="colorKey">
-      {names.map(name => (
-        <li key={name}>
-          <span
-            className="colorExample"
-            style={{ backgroundColor: colorForUser(name) }}
-            onClick={() => selectUser(name)}
-          >
-            {name} ({Math.round((stats[name] / total) * 100)}%)
-          </span>
-        </li>
-      ))}
+      {names.map(name => {
+        const percentage = (stats[name] / total) * 100
+        return (
+          <li key={name}>
+            <span
+              className="colorExample"
+              style={{ backgroundColor: colorForUser(name) }}
+              onClick={() => selectUser(name)}
+            >
+              {name} ({percentage > 0.5 ? Math.round(percentage) : "<1"}%)
+            </span>
+          </li>
+        )
+      })}
     </ul>
   )
 }
@@ -142,9 +146,6 @@ class App extends Component {
 
     socket.on("update", art => {
       if (art.title == title) {
-        const names = Object.keys(art.stats)
-          .filter(x => x != "unknown")
-          .sort((a, b) => art.stats[b] - art.stats[a])
         this.setState({ article: art })
       }
     })
