@@ -5,6 +5,11 @@ workflow "Update the thing" {
 
 action "ssh" {
   uses = "maddox/actions/ssh@master"
-  secrets = ["HOST", "USER", "PUBLIC_KEY", "PRIVATE_KEY"]
-  args = "become whodunnit ~/update.sh"
+  secrets = [
+    "USER",
+    "PUBLIC_KEY",
+    "PRIVATE_KEY",
+    "HOST",
+  ]
+  args = "become whodunnit jsub -mem 4g -j y -stderr -m beas -M gbs@canishe.com update.sh"
 }
