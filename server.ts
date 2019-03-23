@@ -13,9 +13,11 @@ const dmp = new DiffMatchPatch()
 
 export class Revision {
   public text: string | undefined
-  public id: string
+  public id: number
   public author: string | undefined
   public comment: string | undefined
+  public parentid: number
+  public timestamp: string
 
   //True if some of the text attributed to this rev may in fact be from a revdel'd version
   public includesRevdel: boolean = false
@@ -25,6 +27,8 @@ export class Revision {
     this.id = rev.revid
     this.author = rev.user
     this.comment = rev.comment
+    this.parentid = rev.parentid
+    this.timestamp = rev.timestamp
   }
 
   hasText(): this is KnownRev {
@@ -36,7 +40,9 @@ export class Revision {
       id: this.id,
       author: this.author,
       comment: this.comment,
-      includesRevdel: this.includesRevdel
+      includesRevdel: this.includesRevdel,
+      parentid: this.parentid,
+      timestamp: this.timestamp
     }
   }
 }
@@ -104,7 +110,6 @@ export class Article {
 
     let diff = dmp.diff_main(revision.text, this.earliestRev.text)
     dmp.diff_cleanupSemantic(diff)
-    console.log("diff done")
 
     let diffChunkId = 0
     let articleChunkId = 0
@@ -246,15 +251,12 @@ async function run(title: string, client: SocketIo.Socket) {
       earlierRevs.forEach((rev: any, idx) => {
         const revObj = new Revision(rev)
         console.log(
-          `handling rev ${revObj.id} ${revObj.comment} by ${revObj.author}`
+          `[${title}] handling rev ${revObj.id} ${revObj.comment} by ${
+            revObj.author
+          }`
         )
         art!.addRevisionBefore(revObj)
         const stats = art!.stats()
-        console.log(
-          Object.keys(stats)
-            .map(user => `${user}: ${stats[user]}`)
-            .join(", ")
-        )
       })
       client.emit("update", art.toJson())
       if (!art.stats()["unknown"]) {
@@ -279,7 +281,6 @@ const app = express()
 const server = new http.Server(app)
 const io = SocketIo(server, { path: "/whodunnit/socket.io" })
 
-console.log(__dirname + "/whodunnit-client/build")
 app.use("/whodunnit", express.static(__dirname + "/whodunnit-client/build"))
 
 io.on("connection", client => {

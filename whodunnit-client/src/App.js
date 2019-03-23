@@ -12,20 +12,35 @@ function colorForUser(username) {
   })
 }
 
-function Chunk({ chunk, mouseEnter, mouseLeave, highlight, colorId }) {
+function Chunk({
+  chunk,
+  mouseEnter,
+  mouseLeave,
+  hovered,
+  selected,
+  onClick,
+  dim
+}) {
   const classes = []
   classes.push("chunk")
   if (chunk.added) {
     classes.push("known")
   }
-  if (highlight) {
-    classes.push("highlight")
+  if (hovered) {
+    classes.push("hovered")
+  }
+  if (selected) {
+    classes.push("selected")
+  }
+  if (dim) {
+    classes.push("dim")
   }
   return (
     <span
       className={classes.join(" ")}
       onMouseEnter={mouseEnter}
       onMouseLeave={mouseLeave}
+      onClick={onClick}
       style={{
         backgroundColor: chunk.added && colorForUser(chunk.added.author)
       }}
@@ -40,6 +55,9 @@ function ColorKey({ stats }) {
     .filter(x => x != "unknown")
     .sort((a, b) => stats[b] - stats[a])
     .slice(0, 20)
+  const total = Object.keys(stats)
+    .map(x => stats[x])
+    .reduce((a, b) => a + b)
   return (
     <ul id="colorKey">
       {names.map(name => (
@@ -48,7 +66,7 @@ function ColorKey({ stats }) {
             className="colorExample"
             style={{ backgroundColor: colorForUser(name) }}
           >
-            {name}
+            {name} ({Math.round((stats[name] / total) * 100)}%)
           </span>
         </li>
       ))}
@@ -60,7 +78,11 @@ class App extends Component {
   constructor(props) {
     super(props)
 
-    this.state = { hoveredRev: null }
+    this.state = { hoveredRev: null, selectedRev: null, selectedUser: null }
+  }
+
+  activeRev() {
+    return this.state.hoveredRev || this.state.selectedRev
   }
 
   componentDidMount() {
@@ -89,10 +111,7 @@ class App extends Component {
             <Chunk
               key={chunk.id}
               chunk={chunk}
-              mouseEnter={() => {
-                console.log("enter", chunk.added)
-                this.setState({ hoveredRev: chunk.added })
-              }}
+              mouseEnter={() => this.setState({ hoveredRev: chunk.added })}
               mouseLeave={() => {
                 if (
                   this.state.hoveredRev &&
@@ -102,24 +121,63 @@ class App extends Component {
                   this.setState({ hoveredRev: null })
                 }
               }}
-              highlight={
+              onClick={() => this.setState({ selectedRev: chunk.added })}
+              hovered={
                 this.state.hoveredRev &&
-                this.state.hoveredRev.id == (chunk.added && chunk.added.id)
-              }
-              colorId={
                 chunk.added &&
-                this.state.colorScheme &&
-                this.state.colorScheme.indexOf(chunk.added.author) + 1
+                this.state.hoveredRev.id == chunk.added.id
+              }
+              selected={
+                this.state.selectedRev &&
+                chunk.added &&
+                this.state.selectedRev.id == chunk.added.id
+              }
+              dim={
+                this.state.selectedUser &&
+                (!chunk.added || this.state.selectedUser != chunk.added.author)
               }
             />
           ))}
         </pre>
         <div class="sidebar">
           <div id="currentRev">
-            {this.state.hoveredRev && (
+            {this.activeRev() && (
               <div>
-                <p>{this.state.hoveredRev.author}</p>
-                <p>{this.state.hoveredRev.comment}</p>
+                <p>
+                  <b
+                    style={{
+                      backgroundColor: colorForUser(this.activeRev().author)
+                    }}
+                    className="author"
+                    onClick={() => {
+                      if (this.state.selectedUser != this.activeRev().author) {
+                        this.setState({
+                          selectedUser: this.activeRev().author
+                        })
+                      } else {
+                        this.setState({ selectedUser: null })
+                      }
+                    }}
+                  >
+                    {this.activeRev().author}
+                  </b>
+                </p>
+                <p>{this.activeRev().comment}</p>
+                <p>
+                  <a
+                    href={
+                      this.activeRev() &&
+                      `https://en.wikipedia.org/w/index.php?oldid=${
+                        this.activeRev().parentid
+                      }&diff=${this.activeRev().id}`
+                    }
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {new Date(this.activeRev().timestamp).toLocaleString()}{" "}
+                    (local time)
+                  </a>
+                </p>
               </div>
             )}
           </div>
