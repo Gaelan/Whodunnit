@@ -13,9 +13,11 @@ const dmp = new DiffMatchPatch()
 
 export class Revision {
   public text: string | undefined
-  public id: string
+  public id: number
   public author: string | undefined
   public comment: string | undefined
+  public parentid: number
+  public timestamp: string
 
   //True if some of the text attributed to this rev may in fact be from a revdel'd version
   public includesRevdel: boolean = false
@@ -25,6 +27,8 @@ export class Revision {
     this.id = rev.revid
     this.author = rev.user
     this.comment = rev.comment
+    this.parentid = rev.parentid
+    this.timestamp = rev.timestamp
   }
 
   hasText(): this is KnownRev {
@@ -36,7 +40,9 @@ export class Revision {
       id: this.id,
       author: this.author,
       comment: this.comment,
-      includesRevdel: this.includesRevdel
+      includesRevdel: this.includesRevdel,
+      parentid: this.parentid,
+      timestamp: this.timestamp
     }
   }
 }

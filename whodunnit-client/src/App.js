@@ -12,7 +12,7 @@ function colorForUser(username) {
   })
 }
 
-function Chunk({ chunk, mouseEnter, mouseLeave, highlight, colorId }) {
+function Chunk({ chunk, mouseEnter, mouseLeave, highlight }) {
   const classes = []
   classes.push("chunk")
   if (chunk.added) {
@@ -22,16 +22,24 @@ function Chunk({ chunk, mouseEnter, mouseLeave, highlight, colorId }) {
     classes.push("highlight")
   }
   return (
-    <span
+    <a
       className={classes.join(" ")}
       onMouseEnter={mouseEnter}
       onMouseLeave={mouseLeave}
       style={{
         backgroundColor: chunk.added && colorForUser(chunk.added.author)
       }}
+      href={
+        chunk.added &&
+        `https://en.wikipedia.org/w/index.php?oldid=${
+          chunk.added.parentid
+        }&diff=${chunk.added.id}`
+      }
+      target="_blank"
+      rel="noopener"
     >
       {chunk.text}
-    </span>
+    </a>
   )
 }
 
@@ -106,11 +114,6 @@ class App extends Component {
                 this.state.hoveredRev &&
                 this.state.hoveredRev.id == (chunk.added && chunk.added.id)
               }
-              colorId={
-                chunk.added &&
-                this.state.colorScheme &&
-                this.state.colorScheme.indexOf(chunk.added.author) + 1
-              }
             />
           ))}
         </pre>
@@ -118,8 +121,14 @@ class App extends Component {
           <div id="currentRev">
             {this.state.hoveredRev && (
               <div>
-                <p>{this.state.hoveredRev.author}</p>
+                <p>
+                  <b>{this.state.hoveredRev.author}</b>
+                </p>
                 <p>{this.state.hoveredRev.comment}</p>
+                <p>
+                  {new Date(this.state.hoveredRev.timestamp).toLocaleString()}{" "}
+                  (local time)
+                </p>
               </div>
             )}
           </div>

@@ -1,5 +1,7 @@
 .chunk {
   border-right: 2px white solid;
+  color: black;
+  text-decoration: none;
 }
 
 .code {
