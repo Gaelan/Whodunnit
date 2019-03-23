@@ -46,7 +46,8 @@ body {
   margin-bottom: 5px;
 }
 
-.hovered {
+.hovered,
+.selected {
   opacity: 0.8; /* Hack, but it works. */
 }
 
