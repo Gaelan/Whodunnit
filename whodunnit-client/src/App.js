@@ -48,6 +48,9 @@ function ColorKey({ stats }) {
     .filter(x => x != "unknown")
     .sort((a, b) => stats[b] - stats[a])
     .slice(0, 20)
+  const total = Object.keys(stats)
+    .map(x => stats[x])
+    .reduce((a, b) => a + b)
   return (
     <ul id="colorKey">
       {names.map(name => (
@@ -56,7 +59,7 @@ function ColorKey({ stats }) {
             className="colorExample"
             style={{ backgroundColor: colorForUser(name) }}
           >
-            {name}
+            {name} ({Math.round((stats[name] / total) * 100)}%)
           </span>
         </li>
       ))}
