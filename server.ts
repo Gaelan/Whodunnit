@@ -4,10 +4,14 @@ import {
   DIFF_INSERT
 } from "diff-match-patch"
 import fetch from "node-fetch"
-import { promises as fs } from "fs"
 import express from "express"
 import SocketIo from "socket.io"
 import http from "http"
+import child_process from "child_process"
+
+const version = child_process
+  .execSync("git rev-parse --short HEAD", { encoding: "utf8" })
+  .trim()
 
 const dmp = new DiffMatchPatch()
 
@@ -235,7 +239,9 @@ async function run(title: string, client: SocketIo.Socket) {
         rvcontinue ? "&rvcontinue=" + rvcontinue : ""
       }`
       const res = await fetch(url, {
-        headers: { "User-Agent": "User:Gaelan testing some stuff." }
+        headers: {
+          "User-Agent": `Whodunnit/${version} (https://tools.wmflabs.org/whodunnit; User:Gaelan; https://github.com/Gaelan/Whodunnit)`
+        }
       })
       const json = await res.json()
       const pages = json.query.pages
