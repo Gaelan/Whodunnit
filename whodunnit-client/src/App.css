@@ -13,6 +13,7 @@ body {
 .code {
   font-family: sans-serif;
   white-space: pre-wrap;
+  overflow-wrap: break-word;
   overflow-x: hidden;
   overflow-y: scroll;
   max-height: 100vh;
