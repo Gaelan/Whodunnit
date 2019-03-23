@@ -14,6 +14,7 @@ const version = child_process
   .trim()
 
 const dmp = new DiffMatchPatch()
+dmp.Diff_Timeout = 0
 
 export class Revision {
   public text: string | undefined
