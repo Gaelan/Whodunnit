@@ -50,7 +50,7 @@ function Chunk({
   )
 }
 
-function ColorKey({ stats }) {
+function ColorKey({ stats, selectUser }) {
   const names = Object.keys(stats)
     .filter(x => x != "unknown")
     .sort((a, b) => stats[b] - stats[a])
@@ -61,16 +61,56 @@ function ColorKey({ stats }) {
   return (
     <ul id="colorKey">
       {names.map(name => (
-        <li>
+        <li key={name}>
           <span
             className="colorExample"
             style={{ backgroundColor: colorForUser(name) }}
+            onClick={() => selectUser(name)}
           >
             {name} ({Math.round((stats[name] / total) * 100)}%)
           </span>
         </li>
       ))}
     </ul>
+  )
+}
+
+function RevisionDetail({ revision, selectUser }) {
+  return (
+    <div id="currentRev">
+      {revision && (
+        <div>
+          <p>
+            <b
+              style={{
+                backgroundColor: colorForUser(revision.author)
+              }}
+              className="author"
+              onClick={() => selectUser()}
+            >
+              {revision.author}
+            </b>
+          </p>
+
+          <p>{revision.comment}</p>
+
+          <p>
+            <a
+              href={
+                revision &&
+                `https://en.wikipedia.org/w/index.php?oldid=${
+                  revision.parentid
+                }&diff=${revision.id}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {new Date(revision.timestamp).toLocaleString()} (local time)
+            </a>
+          </p>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -83,6 +123,16 @@ class App extends Component {
 
   activeRev() {
     return this.state.hoveredRev || this.state.selectedRev
+  }
+
+  selectUser(name) {
+    if (this.state.selectedUser != name) {
+      this.setState({
+        selectedUser: name
+      })
+    } else {
+      this.setState({ selectedUser: null })
+    }
   }
 
   componentDidMount() {
@@ -105,7 +155,7 @@ class App extends Component {
       return <div>Loading</div>
     }
     return (
-      <div class="flex">
+      <div className="flex">
         <pre className="code">
           {this.state.article.chunks.map(chunk => (
             <Chunk
@@ -139,49 +189,19 @@ class App extends Component {
             />
           ))}
         </pre>
-        <div class="sidebar">
+        <div className="sidebar">
           <div id="currentRev">
-            {this.activeRev() && (
-              <div>
-                <p>
-                  <b
-                    style={{
-                      backgroundColor: colorForUser(this.activeRev().author)
-                    }}
-                    className="author"
-                    onClick={() => {
-                      if (this.state.selectedUser != this.activeRev().author) {
-                        this.setState({
-                          selectedUser: this.activeRev().author
-                        })
-                      } else {
-                        this.setState({ selectedUser: null })
-                      }
-                    }}
-                  >
-                    {this.activeRev().author}
-                  </b>
-                </p>
-                <p>{this.activeRev().comment}</p>
-                <p>
-                  <a
-                    href={
-                      this.activeRev() &&
-                      `https://en.wikipedia.org/w/index.php?oldid=${
-                        this.activeRev().parentid
-                      }&diff=${this.activeRev().id}`
-                    }
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    {new Date(this.activeRev().timestamp).toLocaleString()}{" "}
-                    (local time)
-                  </a>
-                </p>
-              </div>
-            )}
+            <RevisionDetail
+              revision={this.activeRev()}
+              selectUser={() => this.selectUser(this.activeRev().author)}
+            />
           </div>
-          {this.state.article && <ColorKey stats={this.state.article.stats} />}
+          {this.state.article && (
+            <ColorKey
+              stats={this.state.article.stats}
+              selectUser={name => this.selectUser(name)}
+            />
+          )}
         </div>
       </div>
     )
