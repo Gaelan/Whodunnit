@@ -11,6 +11,7 @@
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
+    "ts-node": "^9.0.0",
     "typescript": "^3.3.4000"
   }
 }

@@ -3,12 +3,12 @@ import "./App.css"
 import io from "socket.io-client"
 import randomColor from "randomcolor"
 
-const socket = io({ path: "/whodunnit/socket.io" })
+const socket = io({ path: "/socket.io" })
 
 function colorForUser(username) {
   return randomColor({
     seed: username,
-    luminosity: "light"
+    luminosity: "light",
   })
 }
 
@@ -19,7 +19,7 @@ function Chunk({
   hovered,
   selected,
   onClick,
-  dim
+  dim,
 }) {
   const classes = []
   classes.push("chunk")
@@ -42,7 +42,7 @@ function Chunk({
       onMouseLeave={mouseLeave}
       onClick={onClick}
       style={{
-        backgroundColor: chunk.added && colorForUser(chunk.added.author)
+        backgroundColor: chunk.added && colorForUser(chunk.added.author),
       }}
     >
       {chunk.text}
@@ -52,16 +52,16 @@ function Chunk({
 
 function ColorKey({ stats, selectUser }) {
   const names = Object.keys(stats)
-    .filter(x => x != "unknown")
+    .filter((x) => x != "unknown")
     .sort((a, b) => stats[b] - stats[a])
     .slice(0, 20)
   const total = Object.keys(stats)
-    .map(x => stats[x])
+    .map((x) => stats[x])
     .reduce((a, b) => a + b)
 
   return (
     <ul id="colorKey">
-      {names.map(name => {
+      {names.map((name) => {
         const percentage = (stats[name] / total) * 100
         return (
           <li key={name}>
@@ -87,7 +87,7 @@ function RevisionDetail({ revision, selectUser }) {
           <p>
             <b
               style={{
-                backgroundColor: colorForUser(revision.author)
+                backgroundColor: colorForUser(revision.author),
               }}
               className="author"
               onClick={() => selectUser()}
@@ -102,9 +102,7 @@ function RevisionDetail({ revision, selectUser }) {
             <a
               href={
                 revision &&
-                `https://en.wikipedia.org/w/index.php?oldid=${
-                  revision.parentid
-                }&diff=${revision.id}`
+                `https://en.wikipedia.org/w/index.php?oldid=${revision.parentid}&diff=${revision.id}`
               }
               target="_blank"
               rel="noopener noreferrer"
@@ -132,7 +130,7 @@ class App extends Component {
   selectUser(name) {
     if (this.state.selectedUser != name) {
       this.setState({
-        selectedUser: name
+        selectedUser: name,
       })
     } else {
       this.setState({ selectedUser: null })
@@ -144,7 +142,7 @@ class App extends Component {
 
     socket.emit("requestArticle", { article: title })
 
-    socket.on("update", art => {
+    socket.on("update", (art) => {
       if (art.title == title) {
         this.setState({ article: art })
       }
@@ -158,7 +156,7 @@ class App extends Component {
     return (
       <div className="flex">
         <pre className="code">
-          {this.state.article.chunks.map(chunk => (
+          {this.state.article.chunks.map((chunk) => (
             <Chunk
               key={chunk.id}
               chunk={chunk}
@@ -200,7 +198,7 @@ class App extends Component {
           {this.state.article && (
             <ColorKey
               stats={this.state.article.stats}
-              selectUser={name => this.selectUser(name)}
+              selectUser={(name) => this.selectUser(name)}
             />
           )}
         </div>

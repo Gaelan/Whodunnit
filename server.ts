@@ -1,7 +1,7 @@
 import {
   diff_match_patch as DiffMatchPatch,
   DIFF_DELETE,
-  DIFF_INSERT
+  DIFF_INSERT,
 } from "diff-match-patch"
 import fetch from "node-fetch"
 import express from "express"
@@ -47,7 +47,7 @@ export class Revision {
       comment: this.comment,
       includesRevdel: this.includesRevdel,
       parentid: this.parentid,
-      timestamp: this.timestamp
+      timestamp: this.timestamp,
     }
   }
 }
@@ -70,7 +70,7 @@ class Chunk {
   split(idx: number) {
     const chunk1 = new Chunk(this.text.substring(0, idx))
     const chunk2 = new Chunk(this.text.substring(idx))
-    ;[chunk1, chunk2].forEach(c => {
+    ;[chunk1, chunk2].forEach((c) => {
       c.added = this.added
       c.removed = this.removed
     })
@@ -83,7 +83,7 @@ class Chunk {
       text: this.text,
       added: this.added && this.added.toJson(),
       removed: this.removed && this.removed.toJson(),
-      id: this.id
+      id: this.id,
     }
   }
 }
@@ -207,7 +207,7 @@ export class Article {
   stats() {
     const stats: Record<string, number> = {}
 
-    this.chunks.forEach(chunk => {
+    this.chunks.forEach((chunk) => {
       if (!chunk.removed) {
         const author = (chunk.added && chunk.added.author) || "unknown"
         stats[author] = stats[author] || 0
@@ -221,10 +221,10 @@ export class Article {
   toJson() {
     return {
       chunks: this.chunks
-        .filter(chunk => !chunk.removed)
-        .map(chunk => chunk.toJson()),
+        .filter((chunk) => !chunk.removed)
+        .map((chunk) => chunk.toJson()),
       stats: this.stats(),
-      title: this.title
+      title: this.title,
     }
   }
 }
@@ -234,7 +234,7 @@ async function run(title: string, client: SocketIo.Socket) {
     let rvcontinue: string | null = null
     let art: Article | null = null
     let connected = true
-    client.on("disconnect", reason => {
+    client.on("disconnect", (reason) => {
       console.log(`[${title}] stopping (disconnected: ${reason})`)
       connected = false
     })
@@ -249,8 +249,8 @@ async function run(title: string, client: SocketIo.Socket) {
       }`
       const res = await fetch(url, {
         headers: {
-          "User-Agent": `Whodunnit/${version} (https://tools.wmflabs.org/whodunnit; User:Gaelan; https://github.com/Gaelan/Whodunnit)`
-        }
+          "User-Agent": `Whodunnit/${version} (https://tools.wmflabs.org/whodunnit; User:Gaelan; https://github.com/Gaelan/Whodunnit)`,
+        },
       })
       const json = await res.json()
       if (!connected) {
@@ -269,9 +269,7 @@ async function run(title: string, client: SocketIo.Socket) {
       earlierRevs.forEach((rev: any, idx) => {
         const revObj = new Revision(rev)
         console.log(
-          `[${title}] handling rev ${revObj.id} ${revObj.comment} by ${
-            revObj.author
-          }`
+          `[${title}] handling rev ${revObj.id} ${revObj.comment} by ${revObj.author}`
         )
         art!.addRevisionBefore(revObj)
         const stats = art!.stats()
@@ -296,12 +294,12 @@ async function run(title: string, client: SocketIo.Socket) {
 
 const app = express()
 const server = new http.Server(app)
-const io = SocketIo(server, { path: "/whodunnit/socket.io" })
+const io = SocketIo(server, { path: "/socket.io" })
 
-app.use("/whodunnit", express.static(__dirname + "/whodunnit-client/build"))
+app.use("/", express.static(__dirname + "/whodunnit-client/build"))
 
-io.on("connection", client => {
-  client.on("requestArticle", message => {
+io.on("connection", (client) => {
+  client.on("requestArticle", (message) => {
     run(message.article, client)
   })
 })
