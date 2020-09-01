@@ -25,6 +25,5 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": "http://localhost:4000",
-  "homepage": "http://tools.wmflabs.org/whodunnit/"
+  "proxy": "http://localhost:4000"
 }
